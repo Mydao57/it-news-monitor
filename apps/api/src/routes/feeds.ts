@@ -23,6 +23,14 @@ function isValidUrl(value: string): boolean {
   }
 }
 
+function normalizeTags(input: unknown): string[] {
+  const raw = Array.isArray(input) ? input : typeof input === "string" ? input.split(",") : [];
+  const cleaned = raw
+    .map((tag) => (typeof tag === "string" ? tag.trim().toLowerCase() : ""))
+    .filter(Boolean);
+  return [...new Set(cleaned)];
+}
+
 async function toSummary(feed: HydratedDocument<FeedDocument>): Promise<FeedSummary> {
   const [itemCount, unreadCount] = await Promise.all([
     Item.countDocuments({ feedId: feed._id }),
@@ -38,6 +46,7 @@ async function toSummary(feed: HydratedDocument<FeedDocument>): Promise<FeedSumm
     name: feed.name,
     siteUrl: feed.siteUrl ?? undefined,
     description: feed.description ?? undefined,
+    tags: feed.tags ?? [],
     status: computeFeedStatus(feed),
     lastFetchedAt: feed.lastFetchedAt?.toISOString() ?? null,
     lastFetchError: feed.lastFetchError ?? null,
@@ -61,6 +70,7 @@ feedsRouter.post(
   asyncHandler(async (req, res) => {
     const url = typeof req.body.url === "string" ? req.body.url.trim() : "";
     const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
+    const tags = normalizeTags(req.body.tags);
 
     if (!url || !isValidUrl(url)) {
       res.status(400).json({ error: "A valid feed URL is required." });
@@ -73,7 +83,7 @@ feedsRouter.post(
       return;
     }
 
-    const feed = new Feed({ url, name: name || url });
+    const feed = new Feed({ url, name: name || url, tags });
     await feed.save();
 
     const parsed = await ingestFeed(feed);
@@ -83,6 +93,27 @@ feedsRouter.post(
     }
 
     res.status(201).json(await toSummary(feed));
+  }),
+);
+
+feedsRouter.patch(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const feed = await Feed.findById(req.params.id);
+    if (!feed) {
+      res.status(404).json({ error: "Feed not found." });
+      return;
+    }
+
+    if (typeof req.body.name === "string" && req.body.name.trim()) {
+      feed.name = req.body.name.trim();
+    }
+    if (req.body.tags !== undefined) {
+      feed.tags = normalizeTags(req.body.tags);
+    }
+
+    await feed.save();
+    res.json(await toSummary(feed));
   }),
 );
 
@@ -124,6 +155,7 @@ feedsRouter.get(
         link: item.link ?? null,
         contentSnippet: item.contentSnippet ?? null,
         author: item.author ?? null,
+        categories: item.categories ?? [],
         isoDate: item.isoDate?.toISOString() ?? null,
       })),
     });

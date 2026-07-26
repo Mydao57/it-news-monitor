@@ -5,6 +5,7 @@ const feedSchema = new Schema({
   name: { type: String, required: true, trim: true },
   siteUrl: { type: String },
   description: { type: String },
+  tags: { type: [String], default: [] },
   lastFetchedAt: { type: Date, default: null },
   lastFetchStatus: { type: String, enum: ["ok", "error"], default: null },
   lastFetchError: { type: String, default: null },

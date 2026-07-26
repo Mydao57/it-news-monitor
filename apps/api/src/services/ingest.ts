@@ -37,6 +37,7 @@ async function upsertItems(feedId: Types.ObjectId, items: ParsedItem[]): Promise
           link: item.link ?? null,
           contentSnippet: item.contentSnippet ?? null,
           author: item.creator ?? item.author ?? null,
+          categories: item.categories ?? [],
           isoDate,
         },
         $setOnInsert: { createdAt: new Date() },

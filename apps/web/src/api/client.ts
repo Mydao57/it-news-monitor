@@ -6,6 +6,7 @@ export interface Feed {
   name: string;
   siteUrl?: string;
   description?: string;
+  tags: string[];
   status: FeedStatus;
   lastFetchedAt: string | null;
   lastFetchError: string | null;
@@ -20,6 +21,7 @@ export interface FeedItem {
   link: string | null;
   contentSnippet: string | null;
   author: string | null;
+  categories: string[];
   isoDate: string | null;
 }
 
@@ -51,9 +53,20 @@ export function listFeeds(): Promise<Feed[]> {
   return request<Feed[]>("/api/feeds");
 }
 
-export function createFeed(input: { url: string; name?: string }): Promise<Feed> {
+export function createFeed(input: {
+  url: string;
+  name?: string;
+  tags?: string[];
+}): Promise<Feed> {
   return request<Feed>("/api/feeds", {
     method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateFeed(id: string, input: { name?: string; tags?: string[] }): Promise<Feed> {
+  return request<Feed>(`/api/feeds/${id}`, {
+    method: "PATCH",
     body: JSON.stringify(input),
   });
 }

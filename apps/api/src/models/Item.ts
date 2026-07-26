@@ -7,6 +7,7 @@ const itemSchema = new Schema({
   link: { type: String },
   contentSnippet: { type: String },
   author: { type: String },
+  categories: { type: [String], default: [] },
   isoDate: { type: Date, default: null },
   createdAt: { type: Date, default: () => new Date() },
 });

@@ -6,6 +6,7 @@ export interface FeedSummary {
   name: string;
   siteUrl?: string;
   description?: string;
+  tags: string[];
   status: FeedStatus;
   lastFetchedAt: string | null;
   lastFetchError: string | null;
