@@ -1,5 +1,8 @@
 services:
   mongo:
+    # On a Raspberry Pi 4 (Cortex-A72, ARMv8.0-A) this crashes with
+    # "Illegal instruction" — MongoDB 5+ arm64 builds need ARMv8.2-A.
+    # Fine as-is on Pi 5, x86_64, or Apple Silicon. See README.md.
     image: mongo:7
     restart: unless-stopped
     ports:
