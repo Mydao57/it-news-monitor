@@ -12,6 +12,7 @@ export function AddFeedModal({
 }) {
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
+  const [tags, setTags] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +30,14 @@ export function AddFeedModal({
     setError(null);
 
     try {
-      const feed = await createFeed({ url: url.trim(), name: name.trim() || undefined });
+      const feed = await createFeed({
+        url: url.trim(),
+        name: name.trim() || undefined,
+        tags: tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+      });
       onCreated(feed);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't reach the feed. Try again.");
@@ -72,6 +80,16 @@ export function AddFeedModal({
               placeholder="Leave blank to use the feed's own title"
               value={name}
               onChange={(event) => setName(event.target.value)}
+            />
+          </label>
+
+          <label className="modal-ticket__field">
+            <span>Tags (optional)</span>
+            <input
+              type="text"
+              placeholder="e.g. ai, dev"
+              value={tags}
+              onChange={(event) => setTags(event.target.value)}
             />
           </label>
 

@@ -69,7 +69,37 @@
 .wire-page__actions {
   display: flex;
   gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.wire-page__tags-field {
+  display: block;
   margin-bottom: var(--space-7);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-paper-muted);
+}
+
+.wire-page__tags-row {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  max-width: 24rem;
+}
+
+.wire-page__tags-row input {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-paper);
+  background: var(--color-board-raised);
+  border: 1px solid rgba(237, 230, 214, 0.15);
+  border-radius: 2px;
+  padding: 0.4rem 0.6rem;
 }
 
 .wire-list {
@@ -88,7 +118,7 @@
 
 .wire-slip__code {
   flex: none;
-  width: 6rem;
+  width: 7.5rem;
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   color: var(--color-paper-muted);
@@ -102,6 +132,22 @@
   font-size: var(--text-md);
   line-height: 1.35;
   color: var(--color-paper);
+}
+
+.wire-slip__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  color: var(--color-paper-muted);
+}
+
+.wire-slip__author {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .wire-slip__snippet {

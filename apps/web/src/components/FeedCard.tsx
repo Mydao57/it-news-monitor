@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { Feed } from "../api/client";
 import { relativeTime } from "../utils/time";
 import { PulseDot } from "./PulseDot";
+import { TagPills } from "./TagPills";
 import "./FeedCard.css";
 
 export function FeedCard({
@@ -38,6 +39,12 @@ export function FeedCard({
         {feed.siteUrl && <p className="ticket__source">{hostnameOf(feed.siteUrl)}</p>}
 
         {feed.description && <p className="ticket__description">{feed.description}</p>}
+
+        {feed.tags.length > 0 && (
+          <div className="ticket__tags">
+            <TagPills tags={feed.tags} />
+          </div>
+        )}
       </div>
 
       <div className="ticket__footer">

@@ -113,6 +113,10 @@
   overflow: hidden;
 }
 
+.ticket__tags {
+  margin-top: var(--space-3);
+}
+
 .ticket__footer {
   position: relative;
   z-index: 0;

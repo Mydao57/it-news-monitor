@@ -1,0 +1,40 @@
+.tag-pills {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  opacity: 0.75;
+  background: transparent;
+  color: inherit;
+}
+
+.tag-pill--button {
+  cursor: pointer;
+  transition: opacity 120ms var(--ease-out), background 120ms var(--ease-out);
+}
+
+.tag-pill--button:hover {
+  opacity: 1;
+}
+
+.tag-pill--active {
+  opacity: 1;
+  border-color: var(--color-signal-stale);
+  background: var(--color-signal-stale);
+  color: var(--color-paper);
+}
