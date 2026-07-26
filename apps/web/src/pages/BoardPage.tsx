@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { AddFeedModal } from "../components/AddFeedModal";
 import { Button } from "../components/Button";
 import { FeedCard } from "../components/FeedCard";
 import { Header } from "../components/Header";
+import { TagPills } from "../components/TagPills";
 import { deleteFeed, listFeeds, type Feed } from "../api/client";
 import "./BoardPage.css";
 
@@ -12,6 +13,7 @@ export function BoardPage() {
   const [feeds, setFeeds] = useState<Feed[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
 
   const load = useCallback(async () => {
     try {
@@ -39,6 +41,23 @@ export function BoardPage() {
     await deleteFeed(feed.id).catch(() => load());
   }
 
+  function toggleTag(tag: string) {
+    setActiveTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  }
+
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    feeds?.forEach((feed) => feed.tags.forEach((tag) => set.add(tag)));
+    return [...set].sort();
+  }, [feeds]);
+
+  const visibleFeeds = useMemo(() => {
+    if (!feeds || activeTags.length === 0) return feeds;
+    return feeds.filter((feed) => activeTags.some((tag) => feed.tags.includes(tag)));
+  }, [feeds, activeTags]);
+
   return (
     <div className="board-page">
       <Header>
@@ -60,12 +79,22 @@ export function BoardPage() {
           </div>
         )}
 
-        {feeds !== null && feeds.length > 0 && (
+        {feeds !== null && feeds.length > 0 && allTags.length > 0 && (
+          <div className="board-page__filters">
+            <TagPills tags={allTags} active={activeTags} onToggle={toggleTag} />
+          </div>
+        )}
+
+        {visibleFeeds !== null && visibleFeeds.length > 0 && (
           <div className="board-grid">
-            {feeds.map((feed) => (
+            {visibleFeeds.map((feed) => (
               <FeedCard key={feed.id} feed={feed} onDelete={handleDelete} />
             ))}
           </div>
+        )}
+
+        {feeds !== null && feeds.length > 0 && visibleFeeds?.length === 0 && (
+          <p className="board-page__status">No feeds tagged with {activeTags.join(" or ")}.</p>
         )}
       </main>
 

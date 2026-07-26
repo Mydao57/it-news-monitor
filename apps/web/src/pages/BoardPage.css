@@ -24,6 +24,11 @@
   color: var(--color-signal-stale);
 }
 
+.board-page__filters {
+  margin-bottom: var(--space-5);
+  color: var(--color-paper);
+}
+
 .board-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
