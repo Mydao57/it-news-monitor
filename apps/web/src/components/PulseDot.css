@@ -1,0 +1,59 @@
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.pulse-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: none;
+}
+
+.pulse-dot__core {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pulse-dot--live {
+  color: var(--color-signal-live);
+}
+
+.pulse-dot--live::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-signal-live);
+  animation: pulse-breathe 2.4s var(--ease-out) infinite;
+}
+
+.pulse-dot--stale {
+  color: var(--color-signal-stale);
+}
+
+.pulse-dot--dead,
+.pulse-dot--pending {
+  color: var(--color-signal-dead);
+}
+
+@keyframes pulse-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
