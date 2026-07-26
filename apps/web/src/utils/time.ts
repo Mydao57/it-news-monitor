@@ -17,12 +17,34 @@ export function relativeTime(iso: string | null): string {
   return `${months}mo ago`;
 }
 
-/** Formats a timestamp as a wire-code, e.g. "07.26 14:32Z" (UTC). */
+const MONTH_ABBREV = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+/**
+ * Formats a timestamp as a wire-code in local time, e.g. "26 Jul · 14:32".
+ * Uses a day + month-name order (never DD.MM or MM.DD) so it can't be
+ * misread as the other date order, and shows the reader's own local time
+ * rather than UTC.
+ */
 export function wireCode(iso: string | null): string {
-  if (!iso) return "--.-- --:--Z";
+  if (!iso) return "-- --- · --:--";
 
   const date = new Date(iso);
   const pad = (n: number) => String(n).padStart(2, "0");
+  const year = date.getFullYear();
+  const yearSuffix = year !== new Date().getFullYear() ? ` ${year}` : "";
 
-  return `${pad(date.getUTCMonth() + 1)}.${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}Z`;
+  return `${date.getDate()} ${MONTH_ABBREV[date.getMonth()]}${yearSuffix} · ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
