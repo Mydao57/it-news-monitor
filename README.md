@@ -30,6 +30,74 @@ The API polls every feed on startup and then every `POLL_INTERVAL_MINUTES`
 **live** (≤3 days), **stale** (≤14 days), **dead** (unreachable, or quiet for
 longer).
 
+## Deploying to a VPS
+
+Production runs as three containers behind [Caddy](https://caddyserver.com/),
+which gets HTTPS certificates automatically and is the only thing exposed to
+the internet: Caddy serves the built frontend and reverse-proxies `/api/*` to
+the API container. Mongo and the API stay on the internal Docker network,
+with no public port.
+
+Config lives in `deploy/`: `docker-compose.prod.yml`, the `Caddyfile`, and
+`.env.example`. Replace `rss.example.com` below with your own domain — it's
+never committed, only kept in your local `deploy/.env`.
+
+### 1. Point DNS at the VPS
+
+Add an **A** record (and **AAAA** if the VPS has IPv6) for your subdomain
+pointing at the VPS's public IP. Let's Encrypt needs this to resolve, and
+needs port 80 reachable from the internet, before it will issue a
+certificate — so do this first and let it propagate while you set up Docker.
+
+### 2. Install Docker on the VPS
+
+```bash
+curl -fsSL https://get.docker.com | sh
+```
+
+### 3. Clone the repo and configure
+
+```bash
+git clone https://github.com/Mydao57/it-news-monitor.git
+cd it-news-monitor/deploy
+cp .env.example .env
+nano .env   # set DOMAIN to your actual subdomain
+```
+
+### 4. Bring up the stack
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+```
+
+First boot takes a minute: Docker builds both images, then Caddy requests a
+certificate from Let's Encrypt for the domain in `.env`. Watch it happen:
+
+```bash
+docker compose -f docker-compose.prod.yml logs -f web
+```
+
+Look for `certificate obtained successfully`. Once that's logged, the site
+is live at `https://<your-domain>`.
+
+### Updating later
+
+```bash
+cd it-news-monitor
+git pull
+docker compose -f deploy/docker-compose.prod.yml --env-file deploy/.env up -d --build
+```
+
+### Backing up Mongo
+
+Feed and item data lives in the `mongo-data` Docker volume. To dump it:
+
+```bash
+docker compose -f deploy/docker-compose.prod.yml exec mongo \
+  mongodump --archive=/data/db/backup.gz --gzip
+docker cp deploy-mongo-1:/data/db/backup.gz ./backup.gz
+```
+
 ## Deploying to a Raspberry Pi
 
 The app is light enough to run on a Pi: the frontend is a static build, and
