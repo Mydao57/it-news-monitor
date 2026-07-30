@@ -28,7 +28,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080" # plain-HTTP preview while DNS/TLS isn't ready yet, see Caddyfile
     environment:
       DOMAIN: ${DOMAIN}
     volumes:

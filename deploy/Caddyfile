@@ -11,20 +11,3 @@
 		try_files {path} /index.html
 	}
 }
-
-# Plain-HTTP preview on a fixed port, for testing via the VPS's raw IP
-# before DNS/TLS is ready. Safe to remove once the domain above is live —
-# it serves the same content, just without a certificate to wait on.
-:8080 {
-	encode gzip
-
-	handle /api/* {
-		reverse_proxy api:4000
-	}
-
-	handle {
-		root * /srv
-		file_server
-		try_files {path} /index.html
-	}
-}
